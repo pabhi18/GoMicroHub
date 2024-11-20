@@ -14,25 +14,24 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-const webPort = "7070"
+const webPort = "8081"
 
 var counts int64
 
 type Config struct {
 	DB     *sql.DB
-	models data.Models
+	Models data.Models
 }
 
 func main() {
 	log.Println("Starting Authentication Services")
 
-	// connect db here
-
+	// connect to database
 	conn := connectDB()
 
 	app := Config{
 		DB:     conn,
-		models: data.New(conn),
+		Models: data.New(conn),
 	}
 
 	// set config

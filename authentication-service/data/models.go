@@ -15,7 +15,6 @@ var db *sql.DB
 
 func New(dbPool *sql.DB) Models {
 	db = dbPool
-
 	return Models{
 		User: User{},
 	}

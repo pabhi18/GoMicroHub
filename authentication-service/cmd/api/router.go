@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
@@ -20,6 +21,6 @@ func (app *Config) routes() http.Handler {
 		},
 	))
 
+	mux.Use(middleware.Heartbeat("/ping"))
 	return mux
-
 }
