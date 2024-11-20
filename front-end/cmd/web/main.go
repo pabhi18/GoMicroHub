@@ -61,5 +61,6 @@ func getBashPath() (string, error) {
 	if err != nil {
 		return "", errors.New(err.Error())
 	}
+	fmt.Println("Base Path:", basePath) // Debug print
 	return basePath, nil
 }
