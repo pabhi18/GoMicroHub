@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"logger-service/cmd/data"
+	"net/http"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,6 +22,7 @@ const (
 var client *mongo.Client
 
 type Config struct {
+	Models data.Models
 }
 
 func main() {
@@ -32,6 +36,12 @@ func main() {
 
 	client = mongoClient
 
+	app := Config{
+		Models: data.New(client),
+	}
+
+	// start wen server
+	go app.serve()
 	// create a context in order to disconnect db
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -42,6 +52,19 @@ func main() {
 			panic(err)
 		}
 	}()
+}
+
+func (app *Config) serve() {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.Print("error while serving server", err)
+		panic(err)
+	}
 }
 
 func connectToMongo() (*mongo.Client, error) {
