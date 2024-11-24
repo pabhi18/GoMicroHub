@@ -1,6 +1,7 @@
 FRONT_END = frontApp
 BROKER_BINARY = brokerApp
 Auth_Binary = authApp
+Logger_Binary = loggerApp
 
 .PHONY: up up_build down build_broker build_auth build_frontend run
 
@@ -11,7 +12,7 @@ up:
 	@echo "Docker images started"
 
 ## up_build : stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_broker build_auth build_frontend
+up_build: build_broker build_auth build_frontend build_logger
 	@echo "Stopping docker-compose images (if running...)"
 	docker-compose down
 	@echo "Building (when required ) and starting docker images..."
@@ -30,18 +31,23 @@ build_frontend:
 	cd ../front-end && go build -o ${FRONT_END} ./cmd/web
 	@echo "Build Done!"
 
-
 ## build_broker: builds the broker binary as a Linux executable
 build_broker:
 	@echo "Building broker binary..."
 	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -o ${BROKER_BINARY} ./cmd/api
 	@echo "Done!"
 
-## build_auth: builds the broker binary as a Linux executable
+## build_auth: builds the auth binary as a Linux executable
 build_auth:
 	@echo "Building auth binary..." 
 	cd ../authentication-service && env GOOS=linux CGO_ENABLED=0 go build -o ${Auth_Binary} ./cmd/api
 	@echo "Done!"
+
+## build_logger: builds the logger binary as a Linux executable
+build_logger:
+	@echo "Building logger binary"
+	cd ../logger-service && env GOOS=linux CGO_ENABLED=0 go build -o ${Logger_Binary} ./cmd/api
+	@echo "Build Done!"
 
 ## run: runs the frontend binary
 run:
