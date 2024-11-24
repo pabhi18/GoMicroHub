@@ -65,6 +65,7 @@ func (app *Config) serve() {
 		log.Print("error while serving server", err)
 		panic(err)
 	}
+	log.Printf("Server is running on port %s\n", webPort)
 }
 
 func connectToMongo() (*mongo.Client, error) {
@@ -81,5 +82,6 @@ func connectToMongo() (*mongo.Client, error) {
 		log.Println("Error connecting:", err)
 		return nil, err
 	}
+	log.Println("mongo db connected")
 	return conn, nil
 }
