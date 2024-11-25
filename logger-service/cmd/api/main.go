@@ -41,7 +41,6 @@ func main() {
 	}
 
 	// start wen server
-	go app.serve()
 	// create a context in order to disconnect db
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -52,20 +51,26 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	if err := app.serve(); err != nil {
+		log.Panic("Server error:", err)
+	}
+
 }
 
-func (app *Config) serve() {
+func (app *Config) serve() error {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
+	log.Printf("Server starting on port %s\n", webPort)
 	err := srv.ListenAndServe()
-	if err != nil {
-		log.Print("error while serving server", err)
-		panic(err)
+	if err != nil && err != http.ErrServerClosed {
+		log.Printf("Server error: %v\n", err)
+		return err
 	}
-	log.Printf("Server is running on port %s\n", webPort)
+	return nil
 }
 
 func connectToMongo() (*mongo.Client, error) {

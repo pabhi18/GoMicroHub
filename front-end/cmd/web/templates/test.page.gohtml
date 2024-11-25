@@ -59,7 +59,7 @@
             headers: headers,
         }
 
-        fetch("http:\/\/localhost:8082/handle", body)
+        fetch("http:\/\/localhost:8080/handle", body)
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -94,7 +94,7 @@
             headers: headers,
         }
 
-        fetch("http:\/\/localhost:8081/handle", body)
+        fetch("http:\/\/localhost:8080/handle", body)
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
