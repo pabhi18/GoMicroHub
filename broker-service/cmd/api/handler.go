@@ -59,7 +59,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
 	// call the service
-	request, err := http.NewRequest("POST", "http://authentication-service/authenticate", bytes.NewBuffer(jsonData))
+	request, err := http.NewRequest("POST", "http://authentication-service:8081", bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -108,7 +108,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	jsonData, _ := json.MarshalIndent(entry, "", "/t")
 
-	loggerRequestUrl := "http://logger-service/log"
+	loggerRequestUrl := "http://logger-service:8082"
 
 	request, err := http.NewRequest("POST", loggerRequestUrl, bytes.NewBuffer(jsonData))
 

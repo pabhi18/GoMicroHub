@@ -15,7 +15,7 @@ import (
 const (
 	webPort  = "8082"
 	rpcPort  = "5001"
-	mongoURL = "mongodb://mongo:27017"
+	mongoURL = "mongodb://admin:password@mongo:27017/logs"
 	gRpcPort = "5001"
 )
 
@@ -33,6 +33,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	fmt.Println("Connected to mongo db !")
 
 	client = mongoClient
 
