@@ -1,160 +1,41 @@
 package main
 
-import (
-	"bytes"
-	"html/template"
-	"time"
+import "net/http"
 
-	"github.com/vanng822/go-premailer/premailer"
-	mail "github.com/xhit/go-simple-mail/v2"
-)
-
-type Mail struct {
-	Domain      string
-	Host        string
-	Port        int
-	Username    string
-	Password    string
-	Encryption  string
-	FromAddress string
-	FromName    string
-}
-
-type Message struct {
-	From        string
-	FromName    string
-	To          string
-	Subject     string
-	Attachments []string
-	Data        any
-	DataMap     map[string]any
-}
-
-func (m *Mail) SendSMPTMessage(msg Message) error {
-	if msg.From == "" {
-		msg.From = m.FromAddress
+func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
+	type mailMessage struct {
+		From    string `json:"from"`
+		To      string `json:"to"`
+		Subject string `json:"subject"`
+		Message string `json:"message"`
 	}
 
-	if msg.From == "" {
-		msg.FromName = m.FromName
-	}
+	var requestPayload mailMessage
 
-	data := map[string]any{
-		"message": msg.Data,
-	}
-
-	msg.DataMap = data
-	formattedMessage, err := m.buildHTMLMessage(msg)
+	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
-		return err
+		app.errorJSON(w, err)
+		return
 	}
 
-	plainMessage, err := m.buildPlainTextMessage(msg)
+	msg := Message{
+		From:    requestPayload.From,
+		To:      requestPayload.To,
+		Subject: requestPayload.Subject,
+		Data:    requestPayload.Message,
+	}
+
+	err = app.Mailer.SendSMPTMessage(msg)
 	if err != nil {
-		return err
+		app.errorJSON(w, err)
+		return
 	}
 
-	server := mail.NewSMTPClient()
-	server.Host = m.Host
-	server.Port = m.Port
-	server.Username = m.Username
-	server.Password = m.Password
-	server.Encryption = m.getEncryption(m.Encryption)
-	server.KeepAlive = false
-	server.ConnectTimeout = 10 * time.Second
-	server.SendTimeout = 10 * time.Second
-
-	smptClient, err := server.Connect()
-	if err != nil {
-		return err
+	payLoad := jsonResponse{
+		Error:   false,
+		Message: "sent to" + requestPayload.To,
 	}
 
-	email := mail.NewMSG()
-	email.SetFrom(msg.From).AddTo(msg.To).SetSubject(msg.Subject)
-
-	email.SetBody(mail.TextPlain, plainMessage)
-	email.AddAlternative(mail.TextHTML, formattedMessage)
-
-	if len(msg.Attachments) > 0 {
-		for _, x := range msg.Attachments {
-			email.AddAttachment(x)
-		}
-	}
-
-	err = email.Send(smptClient)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m Mail) buildHTMLMessage(msg Message) (string, error) {
-	templateToRender := "./templates/mail.html.gohtml"
-	t, err := template.New("email-html").ParseFiles(templateToRender)
-	if err != nil {
-		return "", err
-	}
-	var tpl bytes.Buffer
-	if err := t.ExecuteTemplate(&tpl, "body", msg.DataMap); err != nil {
-		return "", err
-	}
-	formattedMessage := tpl.String()
-	formattedMessage, err = m.inlineCSS(formattedMessage)
-
-	if err != nil {
-		return "", err
-	}
-
-	return formattedMessage, nil
-}
-
-func (m Mail) buildPlainTextMessage(msg Message) (string, error) {
-	templateToRender := "./templates/mail.plain.gohtml"
-	t, err := template.New("email-plain").ParseFiles(templateToRender)
-	if err != nil {
-		return "", err
-	}
-	var tpl bytes.Buffer
-	if err := t.ExecuteTemplate(&tpl, "body", msg.DataMap); err != nil {
-		return "", err
-	}
-	plainTextMessage := tpl.String()
-
-	return plainTextMessage, nil
-
-}
-
-func (m *Mail) inlineCSS(s string) (string, error) {
-	options := premailer.Options{
-		RemoveClasses:     false,
-		CssToAttributes:   false,
-		KeepBangImportant: true,
-	}
-
-	prem, err := premailer.NewPremailerFromString(s, &options)
-	if err != nil {
-		return "", err
-	}
-
-	html, err := prem.Transform()
-	if err != nil {
-		return "", err
-	}
-
-	return html, nil
-}
-
-func (m *Mail) getEncryption(s string) mail.Encryption {
-	switch s {
-	case "tls":
-		return mail.EncryptionSTARTTLS
-	case "ssl":
-		return mail.EncryptionSSLTLS
-	case "none":
-		return mail.EncryptionNone
-	default:
-		return mail.EncryptionSTARTTLS
-	}
+	app.writeJSON(w, payLoad, http.StatusCreated)
 
 }
