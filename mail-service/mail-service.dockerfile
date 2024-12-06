@@ -1,7 +1,8 @@
 FROM alpine:latest
 
-RUN mkdir /app 
+WORKDIR /app
 
-COPY mailApp /app
+COPY mailApp .
+COPY ./cmd/templates ./templates
 
 CMD [ "/app/mailApp" ]
