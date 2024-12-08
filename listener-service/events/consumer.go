@@ -1,8 +1,11 @@
 package events
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -116,5 +119,27 @@ func handlePayload(data payload) error {
 }
 
 func logEvent(entry payload) error {
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+
+	loggerRequestUrl := "http://logger-service:8082/log"
+
+	request, err := http.NewRequest("POST", loggerRequestUrl, bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		return err
+	}
+	client := http.Client{}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusAccepted {
+		return errors.New("status code is not got correct during logging event ")
+	}
+
 	return nil
 }

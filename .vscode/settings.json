@@ -1,7 +1,13 @@
 {
       "cSpell.words": [
+            "amqp",
             "bson",
+            "dbname",
+            "healthcheck",
             "INITDB",
-            "mailhog"
+            "mailhog",
+            "rabbitmq",
+            "rebbitmq",
+            "sslmode"
       ]
 }
