@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"listener-service/events"
 	"log"
 	"math"
 	"time"
@@ -19,13 +20,19 @@ func main() {
 		fmt.Println("error during connect rabbit-mq ", err.Error())
 		panic(err)
 	}
-	fmt.Println("Rabbit connection established", rabbitConn.Properties)
-
 	// starting listening for msg : "sender"
 
 	// create consumer
+	consumer, err := events.NewConsumer(rabbitConn)
 
+	if err != nil {
+		panic(err)
+	}
 	// watch queue and events
+	err = consumer.Listen([]string{"log.info", "log.Warring", "log.Error"})
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func connect() (*amqp.Connection, error) {
@@ -36,11 +43,12 @@ func connect() (*amqp.Connection, error) {
 	// don't connect until rebbit is not ready
 
 	for {
-		c, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+		c, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 		if err != nil {
 			fmt.Println("Rabbit is not ready yet")
 			counts++
 		} else {
+			fmt.Println("Rabbit connection established \n", c.Properties)
 			connection = c
 			break
 		}

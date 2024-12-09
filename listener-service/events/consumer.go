@@ -37,10 +37,14 @@ func NewConsumer(conn *amqp.Connection) (Consumer, error) {
 func (consumer *Consumer) setup() error {
 	channel, err := consumer.conn.Channel()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to declare channel : %w", err)
 	}
-	return declareExchange(channel)
+	err = declareExchange(channel)
+	if err != nil {
+		return fmt.Errorf("failed to declare exchange : %w", err)
+	}
 
+	return nil
 }
 
 func (consumer *Consumer) Listen(topics []string) error {
@@ -53,18 +57,20 @@ func (consumer *Consumer) Listen(topics []string) error {
 
 	queue, err := declareQueue(chh)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to declare queue: %w", err)
 	}
 
-	for _, s := range topics {
-		chh.QueueBind(
+	for _, topic := range topics {
+		err := chh.QueueBind(
 			queue.Name,
-			s,
-			"log_topic",
+			topic,
+			"logs_topic",
 			false,
 			nil,
 		)
-
+		if err != nil {
+			return fmt.Errorf("failed to bind queue: %w", err)
+		}
 	}
 
 	messages, err := chh.Consume(
@@ -78,18 +84,23 @@ func (consumer *Consumer) Listen(topics []string) error {
 	)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create a consume: %w", err)
 	}
 
 	var forever = make(chan bool)
 
+	// Process messages
 	for d := range messages {
 		var payloadData payload
-		_ = json.Unmarshal(d.Body, &payloadData)
+		err := json.Unmarshal(d.Body, &payloadData)
+		if err != nil {
+			fmt.Printf("Failed to unmarshal message: %v\n", err)
+			continue
+		}
 		go handlePayload(payloadData)
 	}
 
-	fmt.Printf("Waiting for msg [Exchange, Queue] [logs_topic, %s] \n", queue.Name)
+	fmt.Printf("Waiting for messages [Exchange: logs_topic, Queue: %s] \n", queue.Name)
 	<-forever
 	return nil
 }
