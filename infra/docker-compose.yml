@@ -38,6 +38,18 @@ services:
       replicas: 1
     restart: always
 
+  lister-services:
+    build: 
+      context: ./../listener-service
+      dockerfile: ./../listener-service/listen-service.dockerfile
+    ports:
+      - "8084:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+
+
 
   mailer-service:
     build: 
