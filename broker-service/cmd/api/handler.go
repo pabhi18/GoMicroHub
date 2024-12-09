@@ -189,7 +189,7 @@ func (app *Config) sendMail(w http.ResponseWriter, mail MailPayload) {
 
 	fmt.Println("mailer response in broker service", response)
 
-	if response.StatusCode != http.StatusAccepted {
+	if response.StatusCode != http.StatusCreated {
 		app.errorJSON(w, errors.New("invalid status code"))
 		log.Println("invalid request")
 		return

@@ -51,7 +51,7 @@ services:
     restart: always
     environment:
       MAIL_DOMAIN: localhost
-      MAIL_HOST: mailhug
+      MAIL_HOST: mailhog
       MAIL_PORT: 1025
       MAIL_ENCRYPTION: none
       MAIL_PASSWORD: ""
