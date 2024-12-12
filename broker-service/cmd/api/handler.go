@@ -1,6 +1,7 @@
 package main
 
 import (
+	events "broker-service/event"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -55,7 +56,7 @@ func (app *Config) HandleSubmit(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logItem(w, requestPayload.Log)
+		app.logEventViaRabbit(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 
@@ -202,4 +203,45 @@ func (app *Config) sendMail(w http.ResponseWriter, mail MailPayload) {
 	res.Data = response.Body
 
 	app.writeJSON(w, res, http.StatusAccepted)
+}
+
+func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
+	err := app.PushToQueue(l.Name, l.Data)
+	if err != nil {
+		app.errorJSON(w, err)
+		log.Println("error getting while pushing to queue")
+		return
+	}
+
+	var responsePayload jsonResponse
+	responsePayload.Error = false
+	responsePayload.Message = "logged in RabbitQv"
+	responsePayload.Data = ""
+
+	app.writeJSON(w, responsePayload, http.StatusOK)
+}
+
+func (app *Config) PushToQueue(name string, msg string) error {
+	emitter, err := events.NewEventEmitter(app.Rabbit)
+
+	if err != nil {
+		return err
+	}
+
+	payload := LogPayload{
+		Name: name,
+		Data: msg,
+	}
+
+	j, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	err = emitter.Push(string(j), "log.INFO")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
