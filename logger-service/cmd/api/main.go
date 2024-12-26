@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"logger-service/cmd/data"
+	"net"
 	"net/http"
+	"net/rpc"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -41,13 +43,17 @@ func main() {
 	app := Config{
 		Models: data.New(client),
 	}
+	// register and start rpc server
+	rpcService := new(RPCServer)
+	rpc.Register(rpcService)
+	go app.rpcListen()
 
-	// start wen server
+	// start web server
 	// create a context in order to disconnect db
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	// close connection
+	// close connection-
 	defer func() {
 		if err := client.Disconnect(ctx); err != nil {
 			panic(err)
@@ -58,6 +64,23 @@ func main() {
 		log.Panic("Server error:", err)
 	}
 
+}
+
+func (app *Config) rpcListen() error {
+	listen, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	if err != nil {
+		return err
+	}
+
+	defer listen.Close()
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			continue
+		}
+		go rpc.ServeConn(rpcConn)
+	}
 }
 
 func (app *Config) serve() error {
