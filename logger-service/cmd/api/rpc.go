@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	"logger-service/cmd/data"
+	"logger-service/data"
 	"time"
 )
 

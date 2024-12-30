@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"logger-service/cmd/data"
+	"logger-service/data"
 	"net"
 	"net/http"
 	"net/rpc"

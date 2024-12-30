@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"logger-service/cmd/data"
+	"logger-service/data"
 	"net/http"
 	"time"
 )
