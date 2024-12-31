@@ -47,6 +47,7 @@ func main() {
 	rpcService := new(RPCServer)
 	rpc.Register(rpcService)
 	go app.rpcListen()
+	go app.gRPCListener()
 
 	// start web server
 	// create a context in order to disconnect db
