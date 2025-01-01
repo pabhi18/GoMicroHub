@@ -14,19 +14,17 @@ type jsonResponse struct {
 }
 
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 1048576
-	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
-
-	dec := json.NewDecoder(r.Body)
-
-	if err := dec.Decode(data); err != nil {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
 		return err
 	}
+	defer r.Body.Close()
 
-	if err := dec.Decode(&struct{}{}); err != io.EOF {
-		return errors.New("body must have a single JSON value")
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return errors.New("invalid JSON data")
 	}
-
 	return nil
 }
 
@@ -49,7 +47,6 @@ func (app *Config) writeJSON(w http.ResponseWriter, data any, status int, header
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

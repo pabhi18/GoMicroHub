@@ -16,7 +16,7 @@ import (
 
 const (
 	webPort  = "8082"
-	rpcPort  = "5001"
+	rpcPort  = "5005"
 	mongoURL = "mongodb://admin:password@mongo:27017/logs"
 	gRpcPort = "5001"
 )
@@ -70,6 +70,7 @@ func main() {
 func (app *Config) rpcListen() error {
 	listen, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
 	if err != nil {
+		fmt.Printf("Error while listening rpc server : %v", err)
 		return err
 	}
 
@@ -81,6 +82,7 @@ func (app *Config) rpcListen() error {
 			continue
 		}
 		go rpc.ServeConn(rpcConn)
+		fmt.Printf("rpc connection is established on port : %s and  %v", rpcPort, rpcConn.LocalAddr())
 	}
 }
 

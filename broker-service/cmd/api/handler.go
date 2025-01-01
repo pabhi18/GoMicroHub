@@ -262,25 +262,22 @@ type RPCResult struct {
 }
 
 func (app *Config) logItemVieRPC(w http.ResponseWriter, l LogPayload) {
-	client, err := rpc.Dial("tcp", "logger-service:5001")
+	client, err := rpc.Dial("tcp", "logger-service:5005")
 	if err != nil {
+		fmt.Println("error receiving while dialing rpc server")
 		app.errorJSON(w, err)
 		return
 	}
-
-	fmt.Println("error receiving while dialing rpc server")
 
 	rpcPayload := RPCPayload(l)
 
 	var result RPCResult
 	err = client.Call("RPCServer.LogInfo", rpcPayload, &result)
 	if err != nil {
+		fmt.Println("error receiving while calling rpc server")
 		app.errorJSON(w, err)
 		return
 	}
-
-	fmt.Println("error receiving while calling rpc server")
-
 	fmt.Println("logging result from rpc server", result)
 
 	payLoad := jsonResponse{
@@ -291,15 +288,17 @@ func (app *Config) logItemVieRPC(w http.ResponseWriter, l LogPayload) {
 }
 
 func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
-	var requestPayload RequestPayload
+	var requestPayload LogPayload
 
 	err := app.readJSON(w, r, requestPayload)
 	if err != nil {
+		fmt.Printf("error while reading request data :%v", err)
 		app.errorJSON(w, err)
 		return
 	}
 	conn, err := grpc.Dial("logger-service:5001", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
+		fmt.Printf("error while dialing grpc server, : %v", err)
 		app.errorJSON(w, err)
 		return
 	}
@@ -310,21 +309,22 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	_, err = c.WriteLogs(ctx, &logs.LogRequest{
+	res, err := c.WriteLogs(ctx, &logs.LogRequest{
 		LogEntry: &logs.Log{
-			Name: requestPayload.Log.Name,
-			Data: requestPayload.Log.Data,
+			Name: requestPayload.Name,
+			Data: requestPayload.Data,
 		},
 	})
 
 	if err != nil {
+		fmt.Printf("error while writing log :%v", err)
 		app.errorJSON(w, err)
 		return
 	}
 
 	payLoad := jsonResponse{
 		Error:   false,
-		Message: "logged from gRPC Server",
+		Message: res.Result,
 	}
 	app.writeJSON(w, payLoad, http.StatusAccepted)
 }

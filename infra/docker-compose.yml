@@ -49,8 +49,6 @@ services:
       replicas: 1
     restart: always
 
-
-
   mailer-service:
     build: 
       context: ./../mail-service
@@ -86,7 +84,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
     volumes:
-      - ./db-data/postgres:/var/lib/postgresql/data/
+      - ./db-data/postgres:/var/lib/postgresql/data
 
   mongo:
     image: "mongo:4.2.16-bionic"
@@ -98,7 +96,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     restart: always 
     volumes:
-      - ./db-data/mongo/ :/data/db  
+      - ./db-data/mongo/:/data/db  
 
   mailhog:
     image: mailhog/mailhog:latest
