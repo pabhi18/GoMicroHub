@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-mailer
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mailer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helm-chart.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mailer
+  template:
+    metadata:
+      labels:
+        {{- include "helm-chart.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mailer
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-mailer
+          image: "{{ .Values.image.mailerService.repository }}:{{ .Values.image.mailerService.tag }}"
+          imagePullPolicy: {{ .Values.image.mailerService.pullPolicy }}
+          env:
+            - name: MAIL_DOMAIN
+              value: "{{ .Values.mail.domain }}"
+            - name: MAIL_HOST
+              value: "{{ .Values.mail.host }}"
+            - name: MAIL_PORT
+              value: "{{ .Values.mail.port }}"
+            - name: MAIL_ENCRYPTION
+              value: "{{ .Values.mail.encryption }}"
+            - name: MAIL_USERNAME
+              value: "{{ .Values.mail.username }}"
+            - name: MAIL_PASSWORD
+              value: "{{ .Values.mail.password }}"
+            - name: FROM_NAME
+              value: "{{ .Values.mail.fromName }}"
+            - name: FROM_ADDRESS
+              value: "{{ .Values.mail.fromAddress }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

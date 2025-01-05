@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-auth
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: auth
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helm-chart.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: auth
+  template:
+    metadata:
+      labels:
+        {{- include "helm-chart.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: auth
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-auth
+          image: "{{ .Values.image.authenticationService.repository }}:{{ .Values.image.authenticationService.tag }}"
+          imagePullPolicy: {{ .Values.image.authenticationService.pullPolicy }}
+          env:
+            - name: DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helm-chart.fullname" . }}-postgresql-secret
+                  key: dsn
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helm-chart.fullname" . }}-postgresql-secret
+                  key: postgres-password
+          ports:
+            - name: http
+              containerPort: 8083
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 250m
+            requests:
+              memory: 128Mi
+              cpu: 100m
+      initContainers:
+        - name: wait-for-postgresql
+          image: busybox:1.28
+          command: ['sh', '-c', 'for i in $(seq 1 300); do nc -z microservices-postgresql 5432 && exit 0; echo "waiting for postgresql"; sleep 2; done; exit 1']
+
+            

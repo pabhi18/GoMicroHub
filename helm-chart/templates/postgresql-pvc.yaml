@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-postgresql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ include "helm-chart.fullname" . }}-storage
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.primary.persistence.size }} 

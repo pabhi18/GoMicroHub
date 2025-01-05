@@ -1,7 +1,6 @@
-version: '2'
-
 services:
   broker-service:
+    image: pabhi4881/gomicrohub-broker-service:latest
     build:
       context: ./../broker-service
       dockerfile: broker-service.dockerfile 
@@ -14,6 +13,7 @@ services:
 
 
   authentication-service:
+    image: pabhi4881/gomicrohub-authentication-service:latest
     build:
       context: ./../authentication-service
       dockerfile: ./../authentication-service/authentication-service.dockerfile
@@ -28,6 +28,7 @@ services:
   
 
   logger-service:
+    image: pabhi4881/gomicrohub-logger-service:latest
     build: 
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile
@@ -39,6 +40,7 @@ services:
     restart: always
 
   lister-services:
+    image: pabhi4881/gomicrohub-lister-services:latest
     build: 
       context: ./../listener-service
       dockerfile: ./../listener-service/listen-service.dockerfile
@@ -50,6 +52,7 @@ services:
     restart: always
 
   mailer-service:
+    image: pabhi4881/gomicrohub-mailer-service:latest
     build: 
       context: ./../mail-service
       dockerfile: ./../mail-service/mail-service.dockerfile
