@@ -8,61 +8,61 @@ With Docker Compose managing the services, this application is designed for easy
 
 🧩 Key Services:
 
-Logger Service
+**Logger Service**
 
-A centralized logging system, ensuring smooth tracking of application events.
+   A centralized logging system, ensuring smooth tracking of application events.
 
-Database: MongoDB
+   Database: MongoDB
 
-Authentication Service
+**Authentication Service**
 
-Handles user authentication and security protocols.
+   Handles user authentication and security protocols.
 
-Database: PostgreSQL
+   Database: PostgreSQL
 
-Mailer Service
+**Mailer Service**:
 
-Manages email functionality for the application, ensuring communication via email.
+   Manages email functionality for the application, ensuring communication via email.
 
-Testing: MailHog (local SMTP server for email testing)
+   Testing: MailHog (local SMTP server for email testing)
 
-MailHog Service
+**MailHog Service**
 
-A local SMTP server used to test and capture outgoing emails during development.
+   A local SMTP server used to test and capture outgoing emails during development.
 
-Listener Service
+**Listener Service**
 
-A dedicated service for listening to RabbitMQ messages, enabling smooth communication between services.
+   A dedicated service for listening to RabbitMQ messages, enabling smooth communication between services.
 
-Broker Service
+**Broker Service**
 
-The primary entry point of the application, orchestrating requests and managing service coordination.
+   The primary entry point of the application, orchestrating requests and managing service coordination.
 
 🌟 Features & Benefits:
 
-Microservice Architecture
+ *Microservice Architecture*
 
-Designed for scalability and maintainability, allowing easy expansion.
+  Designed for scalability and maintainability, allowing easy expansion.
 
-gRPC & RabbitMQ
+*gRPC & RabbitMQ*
 
-Enables efficient inter-service communication with low latency and high throughput.
+   Enables efficient inter-service communication with low latency and high throughput.
 
-Docker Compose
+*Docker Compose*
 
-Simplifies orchestration and local setup for streamlined development processes.
+   Simplifies orchestration and local setup for streamlined development processes.
 
-Independent Service Containers
+*Independent Service Containers*
 
-Each service is containerized with its own dedicated Dockerfile for modular and isolated execution.
+   Each service is containerized with its own dedicated Dockerfile for modular and isolated execution.
 
-Multiple Databases
+*Multiple Databases*
 
-MongoDB and PostgreSQL serve different needs, enabling flexible data management.
+   MongoDB and PostgreSQL serve different needs, enabling flexible data management.
 
-MailHog Integration
+*MailHog Integration*
 
-Provides seamless email testing with a local SMTP server, making development efficient and reliable.
+   Provides seamless email testing with a local SMTP server, making development efficient and reliable.
 
 ⚙️ Development & Deployment:
 
@@ -70,5 +70,5 @@ Project Status
 
 ✅ Development Phase Complete!
 
-Currently focusing on deployment, ensuring a smooth transition to production with robust scalability.
+ Currently focusing on deployment, ensuring a smooth transition to production with robust scalability.
 
