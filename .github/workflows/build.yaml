@@ -25,4 +25,5 @@ jobs:
       
       - name: Build and push multi-platform images
         run: |
-          docker buildx bake -f infra/docker-compose.yml --push
+          export BUILDX_BAKE_ENTITLEMENTS_FS=1
+          docker buildx bake --allow=fs.read=.. -f infra/docker-compose.yml --push

@@ -1,9 +1,10 @@
 services:
   broker-service:
     image: pabhi4881/gomicrohub-broker-service:latest
+    platform: linux/amd64,linux/arm64
     build:
       context: ./../broker-service
-      dockerfile: broker-service.dockerfile 
+      dockerfile: broker-service.dockerfile
       platforms:
         - linux/amd64
         - linux/arm64
@@ -12,11 +13,11 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    restart: always  
-
+    restart: always
 
   authentication-service:
     image: pabhi4881/gomicrohub-authentication-service:latest
+    platform: linux/amd64,linux/arm64
     build:
       context: ./../authentication-service
       dockerfile: ./../authentication-service/authentication-service.dockerfile
@@ -31,11 +32,11 @@ services:
     restart: always
     environment:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
-  
 
   logger-service:
     image: pabhi4881/gomicrohub-logger-service:latest
-    build: 
+    platform: linux/amd64,linux/arm64
+    build:
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile
       platforms:
@@ -50,7 +51,8 @@ services:
 
   lister-services:
     image: pabhi4881/gomicrohub-lister-services:latest
-    build: 
+    platform: linux/amd64,linux/arm64
+    build:
       context: ./../listener-service
       dockerfile: ./../listener-service/listen-service.dockerfile
       platforms:
@@ -65,7 +67,8 @@ services:
 
   mailer-service:
     image: pabhi4881/gomicrohub-mailer-service:latest
-    build: 
+    platform: linux/amd64,linux/arm64
+    build:
       context: ./../mail-service
       dockerfile: ./../mail-service/mail-service.dockerfile
       platforms:
@@ -87,14 +90,13 @@ services:
       FROM_NAME: "sanjay gupta"
       FROM_ADDRESS: sanjaygupta07054@gmail.com
 
-
-
   postgres:
     image: "postgres:14.0"
+    platform: linux/amd64,linux/arm64
     ports:
       - "5432:5432"
     restart: always
-    deploy: 
+    deploy:
       mode: replicated
       replicas: 1
     environment:
@@ -106,18 +108,20 @@ services:
 
   mongo:
     image: "mongo:4.2.16-bionic"
+    platform: linux/amd64,linux/arm64
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: logs
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
-    restart: always 
+    restart: always
     volumes:
-      - ./db-data/mongo/:/data/db  
+      - ./db-data/mongo/:/data/db
 
   mailhog:
     image: mailhog/mailhog:latest
+    platform: linux/amd64,linux/arm64
     restart: always
     ports:
       - 1025:1025
@@ -125,6 +129,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
+    platform: linux/amd64,linux/arm64
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -135,7 +140,7 @@ services:
       retries: 3
     ports:
       - "5672:5672"
-      - "15672:15672"  
+      - "15672:15672"
     deploy:
       mode: replicated
       replicas: 1
