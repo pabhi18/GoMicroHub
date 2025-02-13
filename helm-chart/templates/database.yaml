@@ -1,0 +1,8 @@
+{{- /*
+This template generates all database deployments and their corresponding services
+*/ -}}
+
+{{- range $key, $db := .Values.databases }}
+---
+{{ include "common.database" (dict "root" $ "name" $db.name "image" $db.image "tag" $db.tag "port" $db.port "ports" $db.ports "env" $db.env "resources" $db.resources "clusterIP" $db.clusterIP) }}
+{{- end }}

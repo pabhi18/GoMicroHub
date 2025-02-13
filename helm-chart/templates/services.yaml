@@ -1,0 +1,9 @@
+{{- range $key, $service := .Values.services }}
+---
+# Generate Deployment
+{{ include "common.deployment" (dict "root" $ "name" $service.name "image" $service.image "tag" $service.tag "port" $service.port "replicas" $service.replicas "resources" $service.resources "env" $service.env "additionalPorts" $service.additionalPorts) }}
+
+---
+# Generate Service
+{{ include "common.service" (dict "root" $ "name" $service.name "port" $service.port "additionalPorts" $service.additionalPorts) }}
+{{- end }}
