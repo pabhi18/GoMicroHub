@@ -19,11 +19,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: docker compose -f infra/docker-compose.yml build
-
-      - name: Push image to Docker Hub
-        run: docker compose -f infra/docker-compose.yml push
+      - name: Build and push multi-platform images
+        run: |
+          docker compose -f infra/docker-compose.yml build \
+            --build-arg BUILDPLATFORM="linux/amd64,linux/arm64" \
+            --platform "linux/amd64,linux/arm64"
+          docker compose -f infra/docker-compose.yml push
