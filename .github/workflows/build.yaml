@@ -24,6 +24,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       
       - name: Build and push multi-platform images
+        env:
+          BUILDX_BAKE_ENTITLEMENTS_FS: 1
         run: |
-          export BUILDX_BAKE_ENTITLEMENTS_FS=1
           docker buildx bake --allow=fs.read=.. -f infra/docker-compose.yml --push
