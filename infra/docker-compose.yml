@@ -4,6 +4,9 @@ services:
     build:
       context: ./../broker-service
       dockerfile: broker-service.dockerfile 
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8080:8080"
     deploy:
@@ -17,6 +20,9 @@ services:
     build:
       context: ./../authentication-service
       dockerfile: ./../authentication-service/authentication-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8081:8080"
     deploy:
@@ -32,6 +38,9 @@ services:
     build: 
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8082:8080"
     deploy:
@@ -44,6 +53,9 @@ services:
     build: 
       context: ./../listener-service
       dockerfile: ./../listener-service/listen-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8084:8080"
     deploy:
@@ -56,6 +68,9 @@ services:
     build: 
       context: ./../mail-service
       dockerfile: ./../mail-service/mail-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     ports:
       - "8083:8080"
     deploy:
