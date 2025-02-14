@@ -28,6 +28,7 @@ jobs:
       - name: Build and Push Docker Images
         run: |
           docker buildx create --use
-          docker buildx bake -f docker-compose.yml --push
+          docker buildx bake -f docker-compose.yml --push --set *.platform=linux/amd64
+
 
 
