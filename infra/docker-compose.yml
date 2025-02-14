@@ -1,7 +1,6 @@
 services:
   broker-service:
     image: pabhi4881/gomicrohub-broker-service:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ./../broker-service
       dockerfile: broker-service.dockerfile
@@ -17,7 +16,6 @@ services:
 
   authentication-service:
     image: pabhi4881/gomicrohub-authentication-service:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ./../authentication-service
       dockerfile: authentication-service.dockerfile
@@ -35,7 +33,6 @@ services:
 
   logger-service:
     image: pabhi4881/gomicrohub-logger-service:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ./../logger-service
       dockerfile: logger-service.dockerfile
@@ -51,7 +48,6 @@ services:
 
   lister-services:
     image: pabhi4881/gomicrohub-lister-services:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ./../listener-service
       dockerfile: listen-service.dockerfile
@@ -67,7 +63,6 @@ services:
 
   mailer-service:
     image: pabhi4881/gomicrohub-mailer-service:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ./../mail-service
       dockerfile: mail-service.dockerfile
@@ -92,7 +87,6 @@ services:
 
   postgres:
     image: "postgres:14.0"
-    platform: linux/amd64,linux/arm64
     ports:
       - "5432:5432"
     restart: always
@@ -108,7 +102,6 @@ services:
 
   mongo:
     image: "mongo:4.2.16-bionic"
-    platform: linux/amd64,linux/arm64
     ports:
       - "27017:27017"
     environment:
@@ -121,7 +114,6 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
-    platform: linux/amd64,linux/arm64
     restart: always
     ports:
       - 1025:1025
@@ -129,7 +121,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
-    platform: linux/amd64,linux/arm64
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -145,5 +136,4 @@ services:
       mode: replicated
       replicas: 1
     volumes:
-      - ./db-data/rebbitmq/:/var/lib/rabbitmq
-          
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq
