@@ -1,5 +1,0 @@
-db-data/
-*.sql
-*.dump
-*.log
-*.postgres

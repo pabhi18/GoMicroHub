@@ -1,0 +1,139 @@
+services:
+  broker-service:
+    image: pabhi4881/gomicrohub-broker-service:latest
+    build:
+      context: ./broker-service
+      dockerfile: broker-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+
+  authentication-service:
+    image: pabhi4881/gomicrohub-authentication-service:latest
+    build:
+      context: ./authentication-service
+      dockerfile: authentication-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    ports:
+      - "8081:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+    environment:
+      DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  logger-service:
+    image: pabhi4881/gomicrohub-logger-service:latest
+    build:
+      context: ./logger-service
+      dockerfile: logger-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    ports:
+      - "8082:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+
+  lister-services:
+    image: pabhi4881/gomicrohub-lister-services:latest
+    build:
+      context: ./listener-service
+      dockerfile: listen-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    ports:
+      - "8084:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+
+  mailer-service:
+    image: pabhi4881/gomicrohub-mailer-service:latest
+    build:
+      context: ./mail-service
+      dockerfile: mail-service.dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    ports:
+      - "8083:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: none
+      MAIL_PASSWORD: ""
+      MAIL_USERNAME: ""
+      FROM_NAME: "sanjay gupta"
+      FROM_ADDRESS: sanjaygupta07054@gmail.com
+
+  postgres:
+    image: "postgres:14.0"
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    volumes:
+      - ./db-data/postgres:/var/lib/postgresql/data
+
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    restart: always
+    volumes:
+      - ./db-data/mongo/:/data/db
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  rabbitmq:
+    image: rabbitmq:3.11-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostic -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq

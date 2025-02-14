@@ -21,5 +21,11 @@
 go.work
 go.work.sum
 
+db-data/
+*.sql
+*.dump
+*.log
+*.postgres
+
 # env file
 .env
