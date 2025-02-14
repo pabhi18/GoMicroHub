@@ -2,9 +2,12 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN GOOS=linux GOARCH=amd64 go build -o mailApp .
+COPY . . 
+
+RUN GOOS=linux GOARCH=amd64 go build -o mailApp ./cmd/mail
 
 FROM alpine:latest
 
@@ -16,4 +19,5 @@ COPY ./cmd/templates ./templates
 RUN chmod +x /app/mailApp
 
 CMD ["/app/mailApp"]
+
 

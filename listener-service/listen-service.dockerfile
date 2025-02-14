@@ -2,9 +2,12 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN GOOS=linux GOARCH=amd64 go build -o listenApp .
+COPY . . 
+
+RUN GOOS=linux GOARCH=amd64 go build -o listenApp ./cmd/listener
 
 FROM alpine:latest
 
@@ -15,3 +18,4 @@ COPY --from=builder /app/listenApp /app
 RUN chmod +x /app/listenApp
 
 CMD ["/app/listenApp"]
+
