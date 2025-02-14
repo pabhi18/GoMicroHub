@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY . . 
 
-RUN GOOS=linux GOARCH=amd64 go build -o authApp ./cmd/auth
+RUN GOOS=linux GOARCH=amd64 go build -o authApp ./cmd/api
 
 FROM alpine:latest
 
