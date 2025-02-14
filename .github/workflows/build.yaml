@@ -25,6 +25,5 @@ jobs:
       
       - name: Build and push multi-platform images
         env:
-          BUILDX_BAKE_ENTITLEMENTS_FS: 1
         run: |
-          docker buildx bake --allow=fs.read=.. -f infra/docker-compose.yml --push
+          docker buildx -f infra/docker-compose.yml --push
