@@ -1,9 +1,24 @@
+FROM golang:1.23-alpine AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . . 
+
+RUN GOOS=linux GOARCH=amd64 go build -o loggerApp ./cmd/api
+
 FROM alpine:latest
 
 WORKDIR /app
 
-COPY  loggerApp /app
+COPY --from=builder /app/loggerApp /app
 
-CMD [ "/app/loggerApp" ]
+RUN chmod +x /app/loggerApp
+
+CMD ["/app/loggerApp"]
+
+
 
 

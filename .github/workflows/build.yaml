@@ -1,4 +1,4 @@
-name: gomicrohub
+name: Build and Deploy
 
 on:
   push:
@@ -19,11 +19,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: docker compose -f infra/docker-compose.yml build
+      - name: Build and Push Docker Images
+        run: |
+          docker buildx create --use
+          docker buildx bake -f docker-compose.yml --push --set *.platform=linux/amd64
 
-      - name: Push image to Docker Hub
-        run: docker compose -f infra/docker-compose.yml push
+
+

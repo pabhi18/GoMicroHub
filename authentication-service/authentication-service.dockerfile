@@ -1,7 +1,20 @@
+FROM golang:1.23-alpine AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . . 
+
+RUN GOOS=linux GOARCH=amd64 go build -o authApp ./cmd/api
+
 FROM alpine:latest
 
-RUN mkdir /app
+WORKDIR /app
 
-COPY authApp /app
+COPY --from=builder /app/authApp /app
 
-CMD [ "/app/authApp" ]
+RUN chmod +x /app/authApp
+
+CMD ["/app/authApp"]
