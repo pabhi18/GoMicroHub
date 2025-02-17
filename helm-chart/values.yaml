@@ -69,7 +69,7 @@ services:
 
   frontend:
     name: frontend-service
-    image: pabhi4881/gomicrohub-frontend-service:latest
+    image: pabhi4881/gomicrohub-frontend-service
     tag: latest
     port: 9090
     replicas: 1
