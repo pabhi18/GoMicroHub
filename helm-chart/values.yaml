@@ -4,7 +4,7 @@ services:
     name: broker-service
     image: pabhi4881/gomicrohub-broker-service
     tag: latest
-    port: 8080
+    port: 80
     replicas: 1
     resources:
       requests:
@@ -18,7 +18,7 @@ services:
     name: authentication-service
     image: pabhi4881/gomicrohub-authentication-service
     tag: latest
-    port: 8081
+    port: 80
     replicas: 1
     env:
       - name: DSN
@@ -28,7 +28,7 @@ services:
     name: logger-service
     image: pabhi4881/gomicrohub-logger-service
     tag: latest
-    port: 8082
+    port: 80
     replicas: 1
     additionalPorts:
       - port: 5001
@@ -40,7 +40,7 @@ services:
     name: mailer-service
     image: pabhi4881/gomicrohub-mailer-service
     tag: latest
-    port: 8083
+    port: 80
     replicas: 1
     env:
       - name: MAIL_DOMAIN
@@ -64,14 +64,14 @@ services:
     name: listener-service
     image: pabhi4881/gomicrohub-lister-services
     tag: latest
-    port: 8084
+    port: 80
     replicas: 1
 
   frontend:
     name: frontend-service
     image: pabhi4881/gomicrohub-frontend-service
     tag: latest
-    port: 9090
+    port: 80
     replicas: 1
 
 # Database configurations
