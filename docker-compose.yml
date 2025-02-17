@@ -93,7 +93,12 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
     volumes:
-      - ./db-data/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mongo:
     image: "mongo:4.2.16-bionic"
@@ -132,3 +137,29 @@ services:
       replicas: 1
     volumes:
       - ./db-data/rabbitmq/:/var/lib/rabbitmq
+
+  frontend:
+    image: pabhi4881/gomicrohub-frontend-service:latest
+    build:
+      context: ./front-end
+      dockerfile: frontend.dockerfile
+      platforms:
+        - linux/amd64
+    ports:
+      - "9090:9090"
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+    depends_on:
+      - broker-service
+      - authentication-service
+      - logger-service
+      - lister-services
+      - mailer-service
+      
+    volumes:
+      - ./front-end/cmd/web/templates:/app/templates
+
+volumes:
+  postgres-data:
