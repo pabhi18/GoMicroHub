@@ -146,3 +146,8 @@ databases:
       limits:
         memory: "128Mi"
         cpu: "500m"
+        
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
