@@ -7,7 +7,6 @@ metadata:
     {{- include "helm-chart.labels" .root | nindent 4 }}
     app: {{ .name }}
 spec:
-  type: NodePort
   selector:
     app: {{ .name }}
   ports:
