@@ -13,42 +13,42 @@ spec:
   - http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: frontend-service
             port:
               number: 9090
       - path: /broker/(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: broker-service
             port:
               number: 8080
       - path: /auth/(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: authentication-service
             port:
               number: 8081
       - path: /log/(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: logger-service
             port:
               number: 8082
       - path: /mail/(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: mailer-service
             port:
               number: 8083
       - path: /mailhog/(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: mailhog
