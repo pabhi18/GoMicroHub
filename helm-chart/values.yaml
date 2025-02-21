@@ -62,7 +62,7 @@ services:
 
   listener:
     name: listener-service
-    image: pabhi4881/gomicrohub-lister-services
+    image: pabhi4881/gomicrohub-listener-service
     tag: latest
     port: 8084
     replicas: 1
@@ -146,7 +146,7 @@ databases:
       limits:
         memory: "128Mi"
         cpu: "500m"
-        
+
 ingress:
   enabled: true
   className: "nginx"

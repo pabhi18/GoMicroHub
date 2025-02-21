@@ -43,8 +43,8 @@ services:
       replicas: 1
     restart: always
 
-  lister-services:
-    image: pabhi4881/gomicrohub-lister-services:latest
+  listener-service:
+    image: pabhi4881/gomicrohub-listener-service:latest
     build:
       context: ./listener-service
       dockerfile: listen-service.dockerfile
