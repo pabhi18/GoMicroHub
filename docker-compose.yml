@@ -155,7 +155,7 @@ services:
       - broker-service
       - authentication-service
       - logger-service
-      - lister-services
+      - listener-service
       - mailer-service
       
     volumes:
